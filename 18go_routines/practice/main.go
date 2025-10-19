@@ -20,4 +20,5 @@ func main(){
 	}
 
 	wg.Wait()
+	fmt.Println("done with all the go routines.")
 }
