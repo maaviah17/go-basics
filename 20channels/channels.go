@@ -5,24 +5,44 @@ import (
 	"sync"
 )
 
-func main(){
+func main() {
 
-	fmt.Println("Channels in Go : ")
-	numChan := make(chan int,2)
-	var wg sync.WaitGroup
+	fmt.Println(" --Channels in Go-- ")
 
-	//adding 2 go routines
+	//
+	myChannel := make(chan int,2)
+	wg := &sync.WaitGroup{}
+
+	// myChannel <- 5
+	// fmt.Println(<-myChannel)
+
 	wg.Add(2)
-	go func(ch chan int, wg *sync.WaitGroup){
-		fmt.Println(<-numChan)
-		wg.Done()
-	}(numChan,&wg)
 
 
-	go func(ch chan int, wg *sync.WaitGroup){
-		numChan <- 17
+//RECIEVE ONLY
+	go func(ch <-chan int, wg *sync.WaitGroup){
+
+		//this is just a way to check if the channel is open or not || it gives a bool response.
+		val, isChannelOpen := <-myChannel
+
+		fmt.Println(isChannelOpen)
+		fmt.Println(val)
+
+		// fmt.Println(<-myChannel)
+		// fmt.Println(<-myChannel)
 		wg.Done()
-	}(numChan,&wg)
+	}(myChannel,wg)
+
+//SEND ONLY
+	go func(ch chan<- int, wg *sync.WaitGroup){
+
+		myChannel <- 0
+		close(myChannel)
+		// myChannel <- 5
+		// myChannel <- 6
+		// close(myChannel)
+		wg.Done()
+	}(myChannel,wg)
 
 	wg.Wait()
 
